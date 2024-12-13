@@ -1,0 +1,100 @@
+int[] Minutes = {856, 295, 289, 201, 83, 64, 23, 22, 21, 13, 12, 11, 8, 7, 5, 4, 4, 4, 3};
+int[] Notifications = {126, 64, 48, 0, 9, 0, 0, 40, 14, 0, 36, 0, 0, 15, 0, 0, 0, 7, 0};
+String[] MyData = {
+  "YouTube", "Telegram", "Instagram", "Google", "WhatsApp",
+  "Yandex Music", "Photos", "Gmail", "Snapchat", "Google Translate",
+  "Uber Eats", "Settings", "Google Maps", "Clock", "Tube map",
+  "Camera", "Calculator", "Reddit", "Notes"
+};
+boolean Space_Pressed = false;
+void setup() {
+  size(800, 800);
+}
+
+void draw() {
+  background(0);
+  createBubbles();
+}
+
+void createBubbles() {
+  // Determine the range for Minutes and Notifications
+  int minMinutes = min(Minutes);
+  int maxMinutes = max(Minutes);
+  int minNotifications = min(Notifications);
+  int maxNotifications = max(Notifications);
+
+  // Define new size and position ranges
+  float minRadius = 10;
+  float maxRadius = 100;
+  float minY = 50;
+  float maxY = height - 50;
+  float minX = 50;
+  float maxX = width - 50;
+
+  // Calculate the step for x-coordinates
+  float xStep = (maxX - minX) / (Minutes.length - 1);
+
+  for (int i = 0; i < Minutes.length; i++) {
+    // Map Minutes to bubble size
+    float radius = map(Minutes[i], minMinutes, maxMinutes, minRadius, maxRadius);
+    float pulse = sin(millis() / 800) * 5;
+    float final_radius = radius + pulse;
+
+    // Map Notifications to y position
+    float y = map(Notifications[i], minNotifications, maxNotifications, maxY, minY); // Invert for canvas origin at top
+
+    // Calculate x position based on index
+    float x = minX + i * xStep;
+
+    // Draw the bubble
+    color this_color = color(255);
+    if (Minutes[i]>700) {
+      this_color = color(255, 0, 0);
+    } else if (Minutes[i]> 250) {
+      this_color = color(#FF6F00);
+    } else if (Minutes[i]>200) {
+      this_color = color(#FFBC00);
+    } else if (Minutes[i]>100) {
+      this_color = color(#BEFF00);
+    } else if (Minutes[i]>50) {
+      this_color = color(#F6FF00);
+    } else if (Minutes[i]>20) {
+      this_color = color(#ADFF00);
+    } else if (Minutes[i]>10) {
+      this_color = color(#2DFF00);
+    } else if (Minutes[i]>0) {
+      this_color = color(#00FFD2);
+    }
+    if (Space_Pressed) {
+      noStroke();
+      fill(this_color);
+      ellipse(x, y, radius, radius);
+    } else {
+      noStroke();
+      fill(this_color);
+      ellipse(x, y, final_radius * 2, final_radius * 2);
+    }
+
+    //Adding text on the screen
+    float d = dist(mouseX, mouseY, x, y);
+    if (d<radius) {
+      if (Space_Pressed) {
+        stroke(255, 0, 255);
+        strokeWeight(3);
+        noFill();
+        ellipse(x, y, radius, radius);
+        noStroke();
+      }
+
+      fill(#FFFF00);
+      textAlign(CENTER, CENTER);
+      textSize(30);
+      text(MyData[i]+", "+Notifications[i], width/2, height/2);
+    }
+  }
+}
+void keyPressed() {
+  if (key == ' ') {
+    Space_Pressed = !Space_Pressed;
+  }
+}
